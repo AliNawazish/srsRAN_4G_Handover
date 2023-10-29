@@ -1,0 +1,7 @@
+#!/bin/sh
+
+cd build
+cmake ../ -DENABLE_EXPORT=ON -DENABLE_ZEROMQ=ON
+make -j `nproc`
+sudo make install
+sudo ldconfig

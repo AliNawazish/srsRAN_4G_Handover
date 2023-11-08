@@ -50,6 +50,47 @@ proc_outcome_t rrc_nr::connection_reconf_ho_proc::init(const reconf_initiator_t 
   rrc_nr_reconf.to_json(js);
   Debug("RRC NR Reconfiguration: %s", js.to_string().c_str());
 
+
+
+  // rrc_handle.phy->reset_nr();
+
+  Debug("yarr: %d", rrc_handle.cell_selector.is_idle());
+
+  state = state_t::cell_selection;
+  if (rrc_handle.cell_selector.is_idle()) {
+    // No one is running cell selection
+
+    // rrc_handle.phy_cfg.carrier.dl_center_frequency_hz = 881.5 * 1e6;
+    // rrc_handle.phy_cfg.carrier.ul_center_frequency_hz = 836.5 * 1e6;
+    // rrc_handle.phy_cfg.carrier.ssb_center_freq_hz = 881.05 * 1e6;
+    // rrc_handle.phy_cfg.ssb.scs     = srsran_subcarrier_spacing_15kHz; 
+    // rrc_handle.phy_cfg.ssb.pattern = SRSRAN_SSB_PATTERN_A;
+    // rrc_handle.phy_cfg.duplex.mode = SRSRAN_DUPLEX_MODE_FDD;
+
+
+    rrc_handle.phy_cfg.carrier.dl_center_frequency_hz = 1842.5 * 1e6;
+    rrc_handle.phy_cfg.carrier.ul_center_frequency_hz = 1747.5 * 1e6;
+    rrc_handle.phy_cfg.carrier.ssb_center_freq_hz = 1842.05 * 1e6;
+    rrc_handle.phy_cfg.ssb.scs     = srsran_subcarrier_spacing_15kHz; 
+    rrc_handle.phy_cfg.ssb.pattern = SRSRAN_SSB_PATTERN_A;
+    rrc_handle.phy_cfg.duplex.mode = SRSRAN_DUPLEX_MODE_FDD;
+
+
+    // rrc_handle.phy_cfg.carrier.pci = 3;
+          
+
+
+
+    Debug("Launcung Cell select");
+    if (not rrc_handle.cell_selector.launch()) {
+      Error("Failed to initiate cell selection procedure...");
+      return proc_outcome_t::error;
+    }
+    rrc_handle.callback_list.add_proc(rrc_handle.cell_selector);
+  } else {
+    Info("Cell selection proc already on-going. Wait for its result");
+  }
+  return proc_outcome_t::yield;
   // phy_interface_rrc_nr::cell_select_args_t cs_args = {};
   // cs_args.carrier                                  = rrc_handle.phy_cfg.carrier;
   // cs_args.carrier.pci = 3;
@@ -98,32 +139,39 @@ proc_outcome_t rrc_nr::connection_reconf_ho_proc::init(const reconf_initiator_t 
   //   // printf("Secondary cell group: %d\n", secondary_cell_group_cfg.sp_cell_cfg_present);
   //   // if (secondary_cell_group_cfg.sp_cell_cfg_present){
 
-    phy_interface_rrc_nr::cell_search_args_t cs_args = {};
-    cs_args.center_freq_hz                           = 1842.5 * 1e6;
-    cs_args.ssb_freq_hz                              = 1842.05 * 1e6;
-    cs_args.ssb_scs                                  = srsran_subcarrier_spacing_15kHz;
-    cs_args.ssb_pattern                              = SRSRAN_SSB_PATTERN_A;
-    cs_args.duplex_mode                              = SRSRAN_DUPLEX_MODE_FDD;
-    if (not rrc_handle.phy->start_cell_search(cs_args)) {
-      Error("Failed to initiate Cell Search.");
-      return proc_outcome_t::error;
-    }
-  //   // printf("Hurray :)");
 
-  //   // phy_interface_rrc_nr::cell_select_args_t cs_args = {};
-  //   // cs_args.carrier                                  = rrc_handle.phy_cfg.carrier;
-  //   // cs_args.carrier.pci = 3;
 
-  //   // cs_args.ssb_cfg                                  = rrc_handle.phy_cfg.get_ssb_cfg();
 
-  //   // // Transition to cell selection ignoring the cell search result
-  //   // // state = state_t::phy_cell_select;
-  //   // if (not rrc_handle.phy->start_cell_select(cs_args)) {
-  //   //   Error("Could not set start cell search.");
-  //   //   return proc_outcome_t::error;
-  //   // }
+  //   rrc_handle.phy->reset_nr();
 
-    return proc_outcome_t::yield;
+  //   state = state_t::phy_cell_search;
+
+  //   phy_interface_rrc_nr::cell_search_args_t cs_args = {};
+  //   cs_args.center_freq_hz                           = 1842.5 * 1e6;
+  //   cs_args.ssb_freq_hz                              = 1842.05 * 1e6;
+  //   cs_args.ssb_scs                                  = srsran_subcarrier_spacing_15kHz;
+  //   cs_args.ssb_pattern                              = SRSRAN_SSB_PATTERN_A;
+  //   cs_args.duplex_mode                              = SRSRAN_DUPLEX_MODE_FDD;
+  //   if (not rrc_handle.phy->start_cell_search(cs_args)) {
+  //     Error("Failed to initiate Cell Search.");
+  //     return proc_outcome_t::error;
+  //   }
+  // //   // printf("Hurray :)");
+
+  // //   // phy_interface_rrc_nr::cell_select_args_t cs_args = {};
+  // //   // cs_args.carrier                                  = rrc_handle.phy_cfg.carrier;
+  // //   // cs_args.carrier.pci = 3;
+
+  // //   // cs_args.ssb_cfg                                  = rrc_handle.phy_cfg.get_ssb_cfg();
+
+  // //   // // Transition to cell selection ignoring the cell search result
+  // //   // // state = state_t::phy_cell_select;
+  // //   // if (not rrc_handle.phy->start_cell_select(cs_args)) {
+  // //   //   Error("Could not set start cell search.");
+  // //   //   return proc_outcome_t::error;
+  // //   // }
+
+  //   return proc_outcome_t::yield;
 
   //   // rrc_handle.mac->reset();
   //   // rrc_handle.mac->set_crnti(17922);
@@ -193,126 +241,6 @@ proc_outcome_t rrc_nr::connection_reconf_ho_proc::init(const reconf_initiator_t 
   // return proc_outcome_t::success;
 }
 
-proc_outcome_t
-rrc_nr::connection_reconf_ho_proc::handle_cell_search_result(const rrc_interface_phy_nr::cell_search_result_t& result)
-{
-  if (!result.cell_found) {
-    Info("Cell search did not find any cell.");
-    return proc_outcome_t::error;
-  }
-
-  // Convert Cell measurement in Text
-  std::array<char, 512> csi_info_str = {};
-  srsran_csi_meas_info_short(&result.measurements, csi_info_str.data(), (uint32_t)csi_info_str.size());
-
-  // Unpack MIB and convert to text
-  srsran_mib_nr_t       mib          = {};
-  std::array<char, 512> mib_info_str = {};
-  if (srsran_pbch_msg_nr_mib_unpack(&result.pbch_msg, &mib) == SRSASN_SUCCESS) {
-    // Convert to text
-    srsran_pbch_msg_nr_mib_info(&mib, mib_info_str.data(), (uint32_t)mib_info_str.size());
-  } else {
-    // It could be the PBCH does not carry MIB
-    strcpy(mib_info_str.data(), "No MIB found");
-    Error("No MIB found\n");
-    return proc_outcome_t::error;
-  }
-
-  // Check unsupported settings
-  if (mib.cell_barred) {
-    Error("Cell barred");
-    return proc_outcome_t::error;
-  }
-  if (mib.scs_common != srsran_subcarrier_spacing_15kHz) {
-    Error("Unsupported SCS %s", srsran_subcarrier_spacing_to_str(mib.scs_common));
-    return proc_outcome_t::error;
-  }
-
-  // Logs the PCI, cell measurements and decoded MIB
-  Info("Cell search found ARFCN=%d PCI=%d %s %s",
-       result.ssb_arfcn,
-       result.pci,
-       csi_info_str.data(),
-       mib_info_str.data());
-
-  // Apply MIB settings
-  srsran::phy_cfg_nr_t& phy_cfg = rrc_handle.phy_cfg;
-  phy_cfg.pdsch.typeA_pos       = mib.dmrs_typeA_pos;
-  phy_cfg.pdsch.scs_cfg         = mib.scs_common;
-  phy_cfg.carrier.pci           = result.pci;
-
-  // Get pointA and SSB absolute frequencies
-  double pointA_abs_freq_Hz = phy_cfg.carrier.dl_center_frequency_hz -
-                              phy_cfg.carrier.nof_prb * SRSRAN_NRE * SRSRAN_SUBC_SPACING_NR(phy_cfg.carrier.scs) / 2;
-  double ssb_abs_freq_Hz = phy_cfg.carrier.ssb_center_freq_hz;
-  // Calculate integer SSB to pointA frequency offset in Hz
-  uint32_t ssb_pointA_freq_offset_Hz =
-      (ssb_abs_freq_Hz > pointA_abs_freq_Hz) ? (uint32_t)(ssb_abs_freq_Hz - pointA_abs_freq_Hz) : 0;
-
-  // Create coreset0
-  if (srsran_coreset_zero(phy_cfg.carrier.pci,
-                          ssb_pointA_freq_offset_Hz,
-                          phy_cfg.ssb.scs,
-                          phy_cfg.carrier.scs,
-                          mib.coreset0_idx,
-                          &phy_cfg.pdcch.coreset[0])) {
-    Error("Error generating coreset0");
-    return proc_outcome_t::error;
-  }
-  phy_cfg.pdcch.coreset_present[0] = true;
-
-  // Create SearchSpace0
-  make_phy_search_space0_cfg(&phy_cfg.pdcch.search_space[0]);
-  phy_cfg.pdcch.search_space_present[0] = true;
-
-  // Set dummy offset to pass PRACH config check, real value is provided in SIB1
-  phy_cfg.prach.freq_offset = 1;
-
-  // Update PHY configuration
-  rrc_handle.phy_cfg_state = PHY_CFG_STATE_SA_MIB_CFG;
-  if (not rrc_handle.phy->set_config(phy_cfg)) {
-    Error("Setting PHY configuration");
-    return proc_outcome_t::error;
-  }
-
-  phy_interface_rrc_nr::cell_select_args_t cs_args = {};
-  cs_args.carrier                                  = rrc_handle.phy_cfg.carrier;
-  cs_args.carrier.pci = 3;
-  cs_args.ssb_cfg                                  = rrc_handle.phy_cfg.get_ssb_cfg();
-
-  // Transition to cell selection ignoring the cell search result
-  state = state_t::phy_cell_select;
-  if (not rrc_handle.phy->start_cell_select(cs_args)) {
-    Error("Could not set start cell search.");
-    return proc_outcome_t::error;
-  }
-  return proc_outcome_t::yield;
-}
-
-proc_outcome_t rrc_nr::connection_reconf_ho_proc::react(const rrc_interface_phy_nr::cell_select_result_t& event)
-{
-  if (state != state_t::phy_cell_select) {
-    Warning("Received unexpected cell select result");
-    return proc_outcome_t::yield;
-  }
-
-  if (event.status != rrc_interface_phy_nr::cell_select_result_t::SUCCESSFUL) {
-    Error("Couldn't select new serving cell");
-    phy_search_result.cell_found = false;
-    rrc_search_result            = rrc_nr::rrc_cell_search_result_t::no_cell;
-    return proc_outcome_t::error;
-  }
-
-  rrc_search_result = rrc_nr::rrc_cell_search_result_t::same_cell;
-
-  // PHY is now camping on serving cell
-  Info("Cell selection completed. Starting SIB1 acquisition");
-
-  // Transition to cell selection ignoring the cell search result
-  state = state_t::sib_acquire;
-  rrc_handle.mac->bcch_search(true);
-  return proc_outcome_t::success;
-}
 
 proc_outcome_t rrc_nr::connection_reconf_ho_proc::react(const bool& config_complete)
 {
@@ -747,6 +675,13 @@ proc_outcome_t rrc_nr::cell_selection_proc::init()
   // TODO: add full cell selection
   // Start cell search
   phy_interface_rrc_nr::cell_search_args_t cs_args = {};
+
+  // rrc_handle.phy_cfg.carrier.dl_center_frequency_hz = 881.5 * 1e6;
+  // rrc_handle.phy_cfg.carrier.ssb_center_freq_hz                             = 881.05 * 1e6;
+
+
+  // cs_args.center_freq_hz = 881.5 * 1e6;
+  // cs_args.ssb_freq_hz   = 881.05 * 1e6;
   cs_args.center_freq_hz                           = rrc_handle.phy_cfg.carrier.dl_center_frequency_hz;
   cs_args.ssb_freq_hz                              = rrc_handle.phy_cfg.carrier.ssb_center_freq_hz;
   cs_args.ssb_scs                                  = rrc_handle.phy_cfg.ssb.scs;
@@ -819,7 +754,11 @@ rrc_nr::cell_selection_proc::handle_cell_search_result(const rrc_interface_phy_n
   srsran::phy_cfg_nr_t& phy_cfg = rrc_handle.phy_cfg;
   phy_cfg.pdsch.typeA_pos       = mib.dmrs_typeA_pos;
   phy_cfg.pdsch.scs_cfg         = mib.scs_common;
+  
+
+  // if (phy_cfg.carrier.pci != 3)
   phy_cfg.carrier.pci           = result.pci;
+
 
   // Get pointA and SSB absolute frequencies
   double pointA_abs_freq_Hz = phy_cfg.carrier.dl_center_frequency_hz -
@@ -858,6 +797,17 @@ rrc_nr::cell_selection_proc::handle_cell_search_result(const rrc_interface_phy_n
   phy_interface_rrc_nr::cell_select_args_t cs_args = {};
   cs_args.carrier                                  = rrc_handle.phy_cfg.carrier;
   cs_args.ssb_cfg                                  = rrc_handle.phy_cfg.get_ssb_cfg();
+
+  srsran::console("Cell selection carrier params: prbs: %d SSB center freq: %f Offset: %d DL Center freq: %f  UL Center freq: %f\n",
+       cs_args.carrier.nof_prb,
+       cs_args.carrier.ssb_center_freq_hz,
+       cs_args.carrier.offset_to_carrier,
+       cs_args.carrier.dl_center_frequency_hz,
+       cs_args.carrier.ul_center_frequency_hz);
+
+  srsran::console("Cell selection SSB params: SSB center freq: %d SSB freq Hz: %d\n",
+       cs_args.ssb_cfg.center_freq_hz,
+       cs_args.ssb_cfg.ssb_freq_hz);
 
   // Transition to cell selection ignoring the cell search result
   state = state_t::phy_cell_select;

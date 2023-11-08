@@ -273,7 +273,7 @@ private:
   srsran::proc_t<cell_selection_proc, rrc_cell_search_result_t> cell_selector;
   srsran::proc_t<connection_setup_proc>                         conn_setup_proc;
   srsran::proc_t<connection_reconf_no_ho_proc>                  conn_recfg_proc;
-  srsran::proc_t<connection_reconf_ho_proc>                     conn_recfg_ho_proc;
+  srsran::proc_t<connection_reconf_ho_proc> conn_recfg_ho_proc;
   srsran::proc_t<setup_request_proc>                            setup_req_proc;
 
   srsran::proc_manager_list_t callback_list;

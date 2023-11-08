@@ -156,9 +156,10 @@ phy_interface_rrc_nr::phy_nr_state_t phy_nr_sa::get_state()
 void phy_nr_sa::reset_nr()
 {
   sync.reset();
-
   sync.cell_go_idle();
 }
+
+
 
 // This function executes one part of the procedure immediately and returns to continue in the background.
 // When it returns, the caller thread can expect the PHY to have switched to IDLE and have stopped all DL/UL/PRACH

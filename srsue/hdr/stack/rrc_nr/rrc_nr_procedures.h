@@ -130,14 +130,13 @@ private:
 class rrc_nr::connection_reconf_ho_proc
 {
 public:
-  enum class state_t { phy_cell_search, phy_cell_select, sib_acquire };
+  enum class state_t { cell_selection };
 
   explicit connection_reconf_ho_proc(rrc_nr& parent_);
   srsran::proc_outcome_t init(const reconf_initiator_t         initiator_,
                               const bool                       endc_release_and_add_r15,
                               const asn1::rrc_nr::rrc_recfg_s& rrc_nr_reconf);
                         
-  srsran::proc_outcome_t react(const rrc_interface_phy_nr::cell_select_result_t& event);
 
   srsran::proc_outcome_t step() { return srsran::proc_outcome_t::yield; }
   static const char*     name() { return "NR Connection Reconfiguration with Handover"; }
@@ -145,6 +144,7 @@ public:
   void                   then(const srsran::proc_state_t& result);
 
 private:
+  srsran::proc_outcome_t handle_cell_search_result(const rrc_interface_phy_nr::cell_search_result_t& result);
   // const
   rrc_nr&                        rrc_handle;
   reconf_initiator_t             initiator;

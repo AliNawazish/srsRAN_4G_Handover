@@ -131,6 +131,7 @@ public:
   bool rrc_reconfiguration_ho(bool endc_release_and_add_r15, const asn1::rrc_nr::rrc_recfg_s& rrc_nr_reconf);
   bool rrc_reconfiguration(bool endc_release_and_add_r15, const asn1::rrc_nr::rrc_recfg_s& rrc_nr_reconf);
   void rrc_release();
+  void reestablish();
   bool configure_sk_counter(uint16_t sk_counter);
   bool is_config_pending();
 

@@ -22,6 +22,8 @@
 #include "srsue/hdr/stack/rrc_nr/rrc_nr_procedures.h"
 #include "srsran/common/standard_streams.h"
 
+#include <chrono>
+
 #define Error(fmt, ...) rrc_handle.logger.error("Proc \"%s\" - " fmt, name(), ##__VA_ARGS__)
 #define Warning(fmt, ...) rrc_handle.logger.warning("Proc \"%s\" - " fmt, name(), ##__VA_ARGS__)
 #define Info(fmt, ...) rrc_handle.logger.info("Proc \"%s\" - " fmt, name(), ##__VA_ARGS__)
@@ -49,14 +51,13 @@ proc_outcome_t rrc_nr::connection_reconf_ho_proc::init(const reconf_initiator_t 
   asn1::json_writer js;
   rrc_nr_reconf.to_json(js);
   Debug("RRC NR Reconfiguration: %s", js.to_string().c_str());
-
-
-
-  // rrc_handle.phy->reset_nr();
-
-  Debug("yarr: %d", rrc_handle.cell_selector.is_idle());
-
+  
   state = state_t::cell_selection;
+
+  std::chrono::seconds dura(8);
+  std::this_thread::sleep_for( dura );
+
+  
   if (rrc_handle.cell_selector.is_idle()) {
     // No one is running cell selection
 
@@ -90,7 +91,44 @@ proc_outcome_t rrc_nr::connection_reconf_ho_proc::init(const reconf_initiator_t 
   } else {
     Info("Cell selection proc already on-going. Wait for its result");
   }
+
+
+  rrc_handle.mac->reset();
+
+  rrc_handle.reestablish();
+
+  rrc_handle.mac->set_crnti(17922);
+
+
+  // rrc_handle.mac->start_ra_procedure();
+
+  // rrc_handle.meas_cells.serving_cell().reset_sib1();
+
+
+  // rrc_handle.task_sched.defer_callback(20, [this]() {
+  //   // Have RRCReconfComplete message ready when Msg3 is sent
+  //   // rrc_handle.send_rrc_reconfig_complete();
+
+  //   // SCell addition/removal can take some time to compute. Enqueue in a background task and do it in the end.
+  //   // rrc_ptr->apply_scell_config(&recfg_r8, false);
+
+  //   // Send PDCP status report if configured
+  //   // rrc_ptr->pdcp->send_status_report();
+
+  //   Info("Finished HO configuration. Waiting PHY to synchronize with target cell");
+  // });
+
+
+  // rrc_handle.reestablish();
+
+
+
+
   return proc_outcome_t::yield;
+
+  
+
+  // return proc_outcome_t::yield;
   // phy_interface_rrc_nr::cell_select_args_t cs_args = {};
   // cs_args.carrier                                  = rrc_handle.phy_cfg.carrier;
   // cs_args.carrier.pci = 3;
@@ -815,6 +853,8 @@ rrc_nr::cell_selection_proc::handle_cell_search_result(const rrc_interface_phy_n
     Error("Could not set start cell search.");
     return proc_outcome_t::error;
   }
+
+
   return proc_outcome_t::yield;
 }
 
@@ -837,8 +877,10 @@ proc_outcome_t rrc_nr::cell_selection_proc::react(const rrc_interface_phy_nr::ce
   // PHY is now camping on serving cell
   Info("Cell selection completed. Starting SIB1 acquisition");
 
+
   // Transition to cell selection ignoring the cell search result
   state = state_t::sib_acquire;
+
   rrc_handle.mac->bcch_search(true);
   return proc_outcome_t::yield;
 }

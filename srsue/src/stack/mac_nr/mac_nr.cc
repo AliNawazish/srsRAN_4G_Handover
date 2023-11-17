@@ -108,10 +108,13 @@ void mac_nr::reset()
   logger.info("Resetting MAC-NR");
 
   // TODO: Implement all the steps in 5.9
+
   proc_bsr.reset();
   proc_sr.reset();
   proc_ra.reset();
   mux.reset();
+  mux.msg3_flush();
+
   for (const auto& cc : dl_harq) {
     if (cc != nullptr) {
       cc->reset();
@@ -122,6 +125,26 @@ void mac_nr::reset()
       cc->reset();
     }
   }
+
+  logical_channel_config_t config = {};
+  config.lcid                     = 0;
+  config.lcg                      = 0;
+  config.PBR                      = -1;
+  config.BSD                      = 50;
+  config.priority                 = 0;
+  setup_lcid(config);
+
+  // and LCID 1 with lower priority
+  config.lcid     = 1;
+  config.priority = 1;
+  setup_lcid(config);
+
+
+  // is_first_ul_grant = true;
+
+
+
+
 }
 
 void mac_nr::run_tti(const uint32_t tti)

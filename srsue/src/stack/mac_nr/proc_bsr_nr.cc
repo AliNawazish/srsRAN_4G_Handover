@@ -140,7 +140,10 @@ bool proc_bsr_nr::check_any_channel()
 // Checks if only one logical channel has data avaiable for Tx
 bool proc_bsr_nr::check_new_data(const mac_buffer_states_t& new_buffer_state)
 {
+
+
   for (const auto& lcg : buffer_state.lcg_buffer_size) {
+    
     if (lcg.second == 0 and new_buffer_state.lcg_buffer_size.at(lcg.first) > 0) {
       logger.debug("BSR:   New data available for LCG=%d", lcg.first);
       return true;
@@ -188,6 +191,8 @@ void proc_bsr_nr::step(uint32_t tti, const mac_buffer_states_t& new_buffer_state
 
   // Regular BSR triggered if new data arrives or channel with high priority has new data
   if (check_new_data(new_buffer_state_) || check_highest_channel()) {
+
+
     logger.debug("BSR:   Triggering Regular BSR tti=%d", tti);
     set_trigger(REGULAR);
   }

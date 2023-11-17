@@ -1,13 +1,13 @@
 Performing C SOURCE FILE Test HAVE_AVX512 failed with the following output:
 Change Dir: /var/tmp/srsRAN_4G_Handover/build/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_a184a/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_a184a.dir/build.make CMakeFiles/cmTC_a184a.dir/build
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_2ddb0/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_2ddb0.dir/build.make CMakeFiles/cmTC_2ddb0.dir/build
 gmake[1]: Entering directory '/var/tmp/srsRAN_4G_Handover/build/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_a184a.dir/src.c.o
-/usr/bin/cc   -DHAVE_AVX512 -mavx512f -mavx512cd -mavx512bw -mavx512dq -DLV_HAVE_AVX512 -o CMakeFiles/cmTC_a184a.dir/src.c.o -c /var/tmp/srsRAN_4G_Handover/build/CMakeFiles/CMakeTmp/src.c
-Linking C executable cmTC_a184a
-/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_a184a.dir/link.txt --verbose=1
-/usr/bin/cc  -DHAVE_AVX512 -mavx512f -mavx512cd -mavx512bw -mavx512dq -DLV_HAVE_AVX512 CMakeFiles/cmTC_a184a.dir/src.c.o -o cmTC_a184a 
+Building C object CMakeFiles/cmTC_2ddb0.dir/src.c.o
+/usr/bin/cc   -DHAVE_AVX512 -mavx512f -mavx512cd -mavx512bw -mavx512dq -DLV_HAVE_AVX512 -o CMakeFiles/cmTC_2ddb0.dir/src.c.o -c /var/tmp/srsRAN_4G_Handover/build/CMakeFiles/CMakeTmp/src.c
+Linking C executable cmTC_2ddb0
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_2ddb0.dir/link.txt --verbose=1
+/usr/bin/cc  -DHAVE_AVX512 -mavx512f -mavx512cd -mavx512bw -mavx512dq -DLV_HAVE_AVX512 CMakeFiles/cmTC_2ddb0.dir/src.c.o -o cmTC_2ddb0 
 gmake[1]: Leaving directory '/var/tmp/srsRAN_4G_Handover/build/CMakeFiles/CMakeTmp'
 
 

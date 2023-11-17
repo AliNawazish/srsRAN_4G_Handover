@@ -968,6 +968,11 @@ bool rrc_nr::rrc_reconfiguration_ho(bool endc_release_and_add_r15, const asn1::r
   return true;
 }
 
+void rrc_nr::reestablish()
+{
+  rlc->reestablish();
+  pdcp->reestablish();
+}
 
 void rrc_nr::rrc_release()
 {

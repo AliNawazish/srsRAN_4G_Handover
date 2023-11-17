@@ -1200,6 +1200,7 @@ bool rlc_am_nr_tx::do_status()
 void rlc_am_nr_tx::reestablish()
 {
   stop();
+  tx_enabled = true;
 }
 
 void rlc_am_nr_tx::empty_queue()

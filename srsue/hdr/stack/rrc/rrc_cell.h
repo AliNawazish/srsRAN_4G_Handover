@@ -97,6 +97,11 @@ public:
     has_valid_sib13 = false;
   }
 
+  void reset_sib1()
+  {
+    has_valid_sib1 = false;
+  }
+
   uint32_t get_earfcn() const { return phy_cell.earfcn; }
   uint32_t get_pci() const { return phy_cell.pci; }
 

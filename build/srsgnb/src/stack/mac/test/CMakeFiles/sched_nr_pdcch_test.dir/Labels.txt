@@ -1,5 +1,0 @@
-# Directory labels
- sched
- nr
-# Source files and their labels
-/var/tmp/srsRAN_4G_Handover/srsgnb/src/stack/mac/test/sched_nr_pdcch_test.cc

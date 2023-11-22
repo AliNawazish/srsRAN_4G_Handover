@@ -1,0 +1,9 @@
+clang-format
+.clang-tidy
+.gdbinit
+.gitattributes
+.github/
+.gitlab-ci.yml
+.gitlab/
+.memcheck-suppressions
+build/

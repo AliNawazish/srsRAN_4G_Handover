@@ -57,7 +57,7 @@ proc_outcome_t rrc_nr::connection_reconf_ho_proc::init(const reconf_initiator_t 
   std::chrono::seconds dura(8);
   std::this_thread::sleep_for( dura );
 
-  
+    
   if (rrc_handle.cell_selector.is_idle()) {
     // No one is running cell selection
 
@@ -80,8 +80,7 @@ proc_outcome_t rrc_nr::connection_reconf_ho_proc::init(const reconf_initiator_t 
     // rrc_handle.phy_cfg.carrier.pci = 3;
           
 
-
-
+    // srsran::unique_byte_buffer_t dedicated_info_nas_ = make_byte_buffer("12345465767");
     Debug("Launcung Cell select");
     if (not rrc_handle.cell_selector.launch()) {
       Error("Failed to initiate cell selection procedure...");
@@ -93,11 +92,26 @@ proc_outcome_t rrc_nr::connection_reconf_ho_proc::init(const reconf_initiator_t 
   }
 
 
-  rrc_handle.mac->reset();
+  rrc_handle.meas_cells.serving_cell().reset_sib1();
 
-  rrc_handle.reestablish();
+  
+  // rrc_handle.mac->start_ra_procedure();
+  // rrc_handle.mac->reset();
 
-  rrc_handle.mac->set_crnti(17922);
+  // rrc_handle.reestablish();
+
+  // // rrc_handle.mac->start_ra_procedure();
+  // // rrc_handle.phy_cfg.pucch.sr_resources->sr_id = 40;
+  // // rrc_handle.phy_cfg.pucch.sr_resources->offset = 38;
+
+  // rrc_handle.mac->set_crnti(17922);
+  
+  rrc_handle.task_sched.defer_callback(1000, [this]() {
+    // rrc_handle.
+    rrc_handle.mac->bcch_search(false);
+    // rrc_handle.mac->start_ra_procedure();
+  });
+
 
 
   // rrc_handle.mac->start_ra_procedure();

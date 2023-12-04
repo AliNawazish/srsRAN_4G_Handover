@@ -109,6 +109,11 @@ proc_outcome_t rrc_nr::connection_reconf_ho_proc::init(const reconf_initiator_t 
   rrc_handle.task_sched.defer_callback(1000, [this]() {
     // rrc_handle.
     rrc_handle.mac->bcch_search(false);
+    srsran::console("RRC NR reconfiguration (HO) successful.\n");
+
+    if (rrc_handle.rrc_eutra) {
+      rrc_handle.rrc_eutra->nr_rrc_con_reconfig_complete(true);
+    }
     // rrc_handle.mac->start_ra_procedure();
   });
 
